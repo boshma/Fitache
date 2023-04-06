@@ -1,7 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const { Exercise, Meal, FitnessJournal, User } = require('../models/FitnessJournal');
+const { Exercise, Meal, FitnessJournal } = require('../models/FitnessJournal');
+const mongoose = require('mongoose');
+
+const User = require('../models/User');
+
+
 
 
 // // Route to get fitness dashboard data for the logged-in user
@@ -49,9 +54,9 @@ router.post('/add-meal', async (req, res) => {
     const { carbs, proteins, fats } = req.body;
 
     // You can replace req.user.id with a hardcoded value or some other value, since we're not using Passport anymore
-    const userId = "64263570fa1f490305d8ab9a";
+    const userId = req.user.id;
                     
-    // db.users.find({"_id": ObjectId("664263570fa1f490305d8ab9a")}).pretty()
+    // db.users.find({"_id": ObjectId("642e42b7f84c65efc815bf01")}).pretty()
 
     // Find the user by ID
     const user = await User.findById(userId);
@@ -80,13 +85,6 @@ router.post('/add-meal', async (req, res) => {
     res.status(500).json({ message: 'An error occurred while adding the meal' });
   }
 });
-
-
-
-
-
-
-
 
 
 module.exports = router;
