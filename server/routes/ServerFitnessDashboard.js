@@ -1,7 +1,9 @@
+//server/routes/ServerFitnessDashboard.js
+
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const { Exercise, Meal, FitnessJournal } = require('../models/FitnessJournal');
+const { Meal } = require('../models/FitnessJournal');
 const mongoose = require('mongoose');
 
 const User = require('../models/User');
@@ -17,30 +19,39 @@ router.post('/add-workout', passport.authenticate('jwt', { session: false }), as
   // Add workout data to the database and send a response
 });
 
-// Route to add meal data
-router.post('/add-meal', async (req, res, next) => {
-  console.log('Received token:', req.headers.authorization);
-  passport.authenticate('jwt', { session: false }, (err, user, info) => {
-    console.log('Error:', err);
-    console.log('User:', user);
-    console.log('Info:', info);
-
-    if (err) {
-      return next(err);
-    }
+// Route to get meals for the current day
+router.get('/meals-today', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId);
 
     if (!user) {
-      if (info && info.message) {
-        return res.status(401).json({ message: info.message });
-      } else {
-        return res.status(401).json({ message: 'Unauthorized' });
-      }
+      return res.status(404).json({ message: 'User not found' });
     }
 
-    req.user = user;
-    next();
-  })(req, res, next);
-}, async (req, res) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const pageIndex = user.fitnessJournal.pages.findIndex((page) => {
+      const pageDate = new Date(page.date);
+      return pageDate.getTime() === today.getTime();
+    });
+
+    let meals = [];
+
+    if (pageIndex !== -1) {
+      meals = user.fitnessJournal.pages[pageIndex].meals;
+    }
+
+    res.json(meals);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'An error occurred while fetching meals' });
+  }
+});
+
+// Route to add meal data
+router.post('/add-meal', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
     const { name, carbs, proteins, fats } = req.body;
 
@@ -61,16 +72,20 @@ router.post('/add-meal', async (req, res, next) => {
       fats,
     };
 
-    // Check if the user has any fitness journal pages
-    if (user.fitnessJournal.pages.length === 0) {
-      // Create a new fitness journal page for today
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
+    const pageIndex = user.fitnessJournal.pages.findIndex((page) => {
+      const pageDate = new Date(page.date);
+      return pageDate.getTime() === today.getTime();
+    });
+
+    if (pageIndex === -1) {
+      // Create a new fitness journal page for today
       user.fitnessJournal.pages.push({ date: today, meals: [newMeal] });
     } else {
       // Add the new meal to the user's fitnessJournal
-      user.fitnessJournal.pages[0].meals.push(newMeal);
+      user.fitnessJournal.pages[pageIndex].meals.push(newMeal);
     }
 
     // Save the updated user
@@ -84,3 +99,4 @@ router.post('/add-meal', async (req, res, next) => {
 });
 
 module.exports = router;
+
