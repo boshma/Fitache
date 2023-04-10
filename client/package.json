@@ -14,7 +14,9 @@
     "react-router-dom": "^6.9.0",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4",
-    "proxy": "http://localhost:3001"
+    "proxy": "http://localhost:3001",
+    "homepage": "http://fitache2.eba-dr7myvnd.us-west-2.elasticbeanstalk.com/"
+
 
   },
   "resolutions": {

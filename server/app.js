@@ -18,7 +18,10 @@ require('events').EventEmitter.defaultMaxListeners = 20;
 // Connect to the database
 connectToDatabase();
 
-app.use(cors({ origin: 'http://localhost:3001', credentials: true }));
+const isProduction = process.env.NODE_ENV === 'production';
+const origin = isProduction ? 'http://fitache2.eba-dr7myvnd.us-west-2.elasticbeanstalk.com/' : 'http://localhost:3001';
+app.use(cors({ origin, credentials: true }));
+
 
 // Initialize Passport // Add this line
 app.use(passport.initialize()); // Add this line
@@ -32,7 +35,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, '../client/build')));
+//app.use(express.static(path.join(__dirname, '../client/build')));
+
+if (isProduction) {
+  app.use(express.static(path.join(__dirname, '../client/build')));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/build/index.html'));
+  });
+}
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
