@@ -1,3 +1,5 @@
+// server/models/FitnessJournal.js
+
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
@@ -9,10 +11,9 @@ const exerciseSetSchema = new Schema({
 
 const mealSchema = new Schema({
   name: String,
-  calories: Number,
-  protein: Number,
+  proteins: Number,
   carbs: Number,
-  fat: Number,
+  fats: Number,
 });
 
 const fitnessJournalPageSchema = new Schema({

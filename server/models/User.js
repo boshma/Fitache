@@ -1,3 +1,7 @@
+// server/models/User.js
+
+
+
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const Schema = mongoose.Schema;
@@ -22,7 +26,10 @@ const UserSchema = new Schema({
     type: Date,
     default: Date.now
   },
-  fitnessJournal: fitnessJournalSchema,
+  fitnessJournal: {
+    type: fitnessJournalSchema,
+    default: { Pages: [] },
+  },
 });
 
 UserSchema.methods.comparePassword = function (candidatePassword, callback) {
@@ -34,8 +41,5 @@ UserSchema.methods.comparePassword = function (candidatePassword, callback) {
   });
 };
 
-
 const User = mongoose.model('User', UserSchema);
 module.exports = User;
-
-

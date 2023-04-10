@@ -8,13 +8,24 @@ var indexRouter = require('./routes/ServerIndex');
 var usersRouter = require('./routes/ServerUsers');
 const dashboardRouter = require('./routes/ServerFitnessDashboard');
 const connectToDatabase = require('./config/database');
+const passport = require('passport'); // Add this line
 
 var app = express();
+
+require('events').EventEmitter.defaultMaxListeners = 20; 
+
 
 // Connect to the database
 connectToDatabase();
 
 app.use(cors({ origin: 'http://localhost:3001', credentials: true }));
+
+// Initialize Passport // Add this line
+app.use(passport.initialize()); // Add this line
+
+// Passport configuration // Add this line
+require('./middleware/auth')(passport); 
+
 
 app.use(logger('dev'));
 app.use(express.json());
