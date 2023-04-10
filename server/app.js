@@ -3,7 +3,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
-
+const port = process.env.PORT || 3000;
 var indexRouter = require('./routes/ServerIndex');
 var usersRouter = require('./routes/ServerUsers');
 const dashboardRouter = require('./routes/ServerFitnessDashboard');
@@ -54,10 +54,9 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/public/index.html'));
 });
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
 
 
 module.exports = app;
+
+
+
