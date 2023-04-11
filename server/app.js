@@ -1,3 +1,5 @@
+//server/app.js
+
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -8,7 +10,7 @@ var indexRouter = require('./routes/ServerIndex');
 var usersRouter = require('./routes/ServerUsers');
 const dashboardRouter = require('./routes/ServerFitnessDashboard');
 const connectToDatabase = require('./config/database');
-const passport = require('passport'); // Add this line
+const passport = require('passport'); 
 
 var app = express();
 
@@ -19,15 +21,15 @@ require('events').EventEmitter.defaultMaxListeners = 20;
 connectToDatabase();
 
 const isProduction = process.env.NODE_ENV === 'production';
-const origin = isProduction ? 'http://fitache2.eba-dr7myvnd.us-west-2.elasticbeanstalk.com/' : 'http://localhost:3001';
+const origin = isProduction ? 'http://ii-env.eba-xgyfgwwk.us-west-2.elasticbeanstalk.com/' : 'http://localhost:3001';
 app.use(cors({ origin, credentials: true }));
 
 
-// Initialize Passport // Add this line
+// Initialize Passport 
 app.use(passport.initialize()); // Add this line
 
-// Passport configuration // Add this line
-require('./middleware/auth')(passport); 
+// Passport configuration 
+require('./middleware/auth')(passport);
 
 
 app.use(logger('dev'));
@@ -37,12 +39,20 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 //app.use(express.static(path.join(__dirname, '../client/build')));
 
-if (isProduction) {
+
+
+
+if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/build')));
-  app.get('*', (req, res) => {
+
+  app.get('*', (req, res, next) => {
+    if (req.url.startsWith('/api/')) {
+      return next();
+    }
     res.sendFile(path.join(__dirname, '../client/build/index.html'));
   });
 }
+
 
 
 app.use('/', indexRouter);

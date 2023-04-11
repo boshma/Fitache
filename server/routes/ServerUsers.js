@@ -1,6 +1,6 @@
 // server/routes/ServerUsers.js
 
-const { jwtSecret } = require("../../config");
+const { jwtSecret } = require("../config");
 var express = require("express");
 var router = express.Router();
 const passport = require("passport");

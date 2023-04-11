@@ -3,7 +3,7 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 const LocalStrategy = require('passport-local').Strategy;
 const mongoose = require('mongoose');
 const { FitnessJournal } = require('../models/FitnessJournal'); // Update this line
-const config = require('../../config');
+const config = require('../config');
 const User = require('../models/User');
 
 
